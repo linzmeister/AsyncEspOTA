@@ -1,0 +1,196 @@
+<html>
+<head>
+<style>
+    #blocker {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        background: steelblue;
+        opacity: 0.95;
+        color: white;
+    }
+    .spacer {
+        display: block;
+        width: 100%;
+        height: 80px;
+    }
+    .small {
+		height: 5px;
+	}
+    .hidden {
+        display: none !important;
+    }
+    .btn-container {
+        display: flex;
+        justify-content: flex-end;
+		align-items: center;
+    }
+    .btn-container input {
+        width: 15%;
+        border: 1px solid lightgrey;
+        border-radius: 5px;
+        padding: 15px 32px;
+        margin: 10px 5px;
+    }
+    .btn {
+        border-radius: 5px;
+        padding: 15px 10px;
+        text-align: center;
+        transition-duration: 0.4s;
+        margin: 10px 5px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .edit {
+        background-color: dodgerblue;
+        border: solid 1px dodgerblue;
+        color: white;
+    }
+    .edit:hover {
+        color: dodgerblue;
+    }
+    .save {
+        background-color: yellowgreen;
+        border: solid 1px yellowgreen;
+        color: white;
+    }
+	.save:hover {
+        color: yellowgreen;
+    }
+    .cancel {
+        background-color: black;
+        border: solid 1px black;
+        color: white;
+    }
+    .cancel:hover {
+        color: black;
+    }
+    .btn:hover {
+        background-color: white;
+    }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="row" id="rowScanWlan-3">	<!-- row -->
+    <div class="wifi-info">				<!-- column 60%-->
+      <div class="wifi-name" id="scanWlan-3-ssid">
+        GI-VoIP 						
+      </div>
+    </div>
+    <div class="column">
+      <div class="btn-container" id="scanWlan-3-connect">
+	<img src="" alt="||" height="35px" border="0">
+	<img src="" alt="C" height="35px" border="0">
+	<a id="scanWlan-3-show" class="btn edit" onclick="(function(){
+	  document.getElementById('scanWlan-3-connect').classList.add('hidden');
+	  document.getElementById('scanWlan-3-edit').classList.remove('hidden');
+          stopScan();
+	  })();">
+	    Connect
+	</a>
+	</div>
+    </div>
+</div>
+
+
+
+</div>
+<div class="spacer small">	
+  <!--  forces the row above to FILL a row, rather than wrapping multiple networks onto a single row -->
+</div>
+  <div class="more-info hidden" id="scanWlan-3-edit">
+    <div class="wifi-info">Enter Password:
+      <input type="text" name="password" id="scanWlan-3-password"></div>
+    <div class="column">
+      <div class="btn-container" id="rowSsidScanWlan-3">
+        <a id="scanWlan-3-save" class="btn save" onclick="saveWlan(this)">
+         Save
+        </a>
+	<a id="scanWlan-3-cancel" class="btn edit" onclick="(function(){
+  	  document.getElementById('scanWlan-3-password').value='';
+	  document.getElementById('scanWlan-3-edit').classList.add('hidden');
+	  document.getElementById('scanWlan-3-connect').classList.remove('hidden');
+          startScan();
+	  })();">
+	  Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="blocker" class="hidden">
+  <h2 id="blocker-title">Loading</h2>
+    <div id="Saved">
+      <p id="finished">
+      </p>
+    </div>
+  </div>
+</body>
+
+<Script>
+
+const saveWlan = async (element) => {
+	console.log("[savingWlan]");
+	document.getElementById('blocker-title').innerHTML='Saving';
+	document.getElementById('blocker').classList.remove('hidden');		// this works !!
+	
+
+	console.log("element.id = " + element.id);
+
+	const nameParts  = element.id.split('-');
+	const wlanPrefix = nameParts[0];        			// returns scanWlan
+	const wlanIndex  = nameParts[1];        			// returns 3
+									// I can now add a suffix of my choosing
+
+	var editId = `${wlanPrefix}-${wlanIndex}-edit`;
+	var connectId = `${wlanPrefix}-${wlanIndex}-connect`;
+	console.log("editId = " + editId);
+	console.log("connectId = " + connectId);
+
+
+
+	// these don't work VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+	// comment out to see commands below fail also
+	document.getElementById(`${wlanPrefix}-${wlanIndex}-connect`).classList.add('hidden'); 
+	document.getElementById(`${wlanPrefix}-${wlanIndex}-edit`).classList.remove('hidden');
+	
+	document.getElementById(editId).classList.add('hidden');
+	document.getElementById(connectId).classList.remove('hidden');
+
+
+document.getElementById('blocker').classList.add('hidden');		// this works !!
+	// transfer data to server etc...
+}
+
+
+// Window Interval functions:
+//Interval never stops, we just stop responding to it!!
+
+var scanning = true;	//global scope	
+
+function startScan(){		// resume scanning for WiFi Networks every 15 seconds...  
+  if(scanning==false){		// but only once every 15 seconds... ;)
+    scanning = true;
+  }
+}
+
+function doWifiScan(){
+  if (scanning==true) fetchScannedList();
+}
+
+function stopScan(){
+  scanning = false;
+}
+
+</script>
+</html>

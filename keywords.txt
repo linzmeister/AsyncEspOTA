@@ -1,0 +1,46 @@
+A list of keywords for the library may be specified in a file named keywords.txt located in the root of the library folder. When a keyword of any installed library is used in a sketch the Arduino IDE colors it.
+
+
+Servo/keywords.txt
+An example keywords.txt file:
+
+
+# Syntax Coloring Map For ExampleLibrary
+
+# Datatypes (KEYWORD1)
+Test    KEYWORD1
+
+# Methods and Functions (KEYWORD2)
+doSomething KEYWORD2
+
+# Instances (KEYWORD2)
+
+# Constants (LITERAL1)
+This file would cause the Arduino IDE to highlight Test as a data type, and doSomething as a method / function.
+
+keywords.txt format¶
+keywords.txt is formatted in four fields which are separated by a single true tab (not spaces):
+
+
+KEYWORD KEYWORD_TOKENTYPE   REFERENCE_LINK  RSYNTAXTEXTAREA_TOKENTYPE
+It is permitted to leave a field empty.
+
+KEYWORD_TOKENTYPE¶
+KEYWORD_TOKENTYPE	Use for	Theme property
+KEYWORD1	datatypes	editor.data_type.style
+KEYWORD2	functions	editor.function.style
+KEYWORD3	structures	editor.function.style
+LITERAL1	constants	editor.reserved_word_2.style
+LITERAL2	?	editor.function.style
+REFERENCE_LINK¶
+This field specifies the Arduino Language Reference page to open via the Arduino IDE's Right Click > Find in Reference or Help > Find in Reference when the cursor is on that keyword. Generally it does not make sense to define the REFERENCE_LINK field for 3rd party library keywords since they are not likely to be in the Arduino Language Reference.
+
+RSYNTAXTEXTAREA_TOKENTYPE¶
+In Arduino IDE 1.6.5 and newer this field overrides KEYWORD_TOKENTYPE. In previous IDE versions the RSYNTAXTEXTAREA_TOKENTYPE field is ignored and KEYWORD_TOKENTYPE is used instead.
+
+RSYNTAXTEXTAREA_TOKENTYPE	Theme property	KEYWORD_TOKENTYPE equivalent
+RESERVED_WORD	editor.reserved_word.style	KEYWORD3
+RESERVED_WORD_2	editor.reserved_word_2.style	LITERAL1
+DATA_TYPE	editor.data_type.style	KEYWORD1
+PREPROCESSOR	editor.preprocessor.style	KEYWORD3
+LITERAL_BOOLEAN	editor.literal_boolean.style	LITERAL1

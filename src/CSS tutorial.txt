@@ -1,0 +1,17 @@
+Selector		Example		Example description
+#id			#firstname	Selects the element with id="firstname"
+.class			.intro		Selects all elements with class="intro"
+element.class		p.intro		Selects only <p> elements with class="intro"
+*			*		Selects all elements
+element			p		Selects all <p> elements
+element,element,..	div, p		Selects all <div> elements and all <p> elements
+
+Specificity Hierarchy
+Every CSS selector has its place in the specificity hierarchy.
+
+There are four categories which define the specificity level of a selector:
+
+1	Inline styles - Example: <h1 style="color: pink;">3	
+2	IDs - Example: #navbar
+3	Classes, pseudo-classes, attribute selectors - Example: .test, :hover, [href]
+4	Elements and pseudo-elements - Example: h1, ::before
