@@ -1,7 +1,15 @@
 [{
-    "version": "0.7.0",
+    "version": "0.7.1",
     "build": 1,
     "current": true,
+    "partitionScheme":"min_spiffs",
+    "description": "Functional Save, Edit and Delete",
+    "compatibility": []
+},
+{
+    "version": "0.7.0",
+    "build": 1,
+    "current": false,
     "partitionScheme":"min_spiffs",
     "description": "Wifi Provisioning functional",
     "compatibility": []
