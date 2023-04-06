@@ -69,93 +69,6 @@ String root(){
 }
 
 
-//**************************************************************************************************
-// Settings/Preferences web page
-/*
-String settings(){
-  String result = "<form id='BFCSettings' method='POST' action='/settings' name='settingsForm'>"
-      "<table width='90%' bgcolor='#33ccff' align='center'>"
-        "<tr>"
-            "<td colspan=2>"
-                "<center><font size=4><b>Settings</b></font></center>"
-                "<p>"
-            "</td>"
-        "</tr>"
-        "<tr>"
-             "<td style='text-align:right'>Home SSID :</td>"
-             "<td><input id='hssidfield' type='text' name='homessid' value='" +
-              hssid +
-        "'<br>"
-              "</td>"
-        "</tr>"
-        "<p>"
-        "<tr>"
-             "<td style='text-align:right'>Home Password :</td>"
-             "<td><input type='text' id='homepassword' name='homepassword' value='" +
-              hpass +
-      "'><br></td>"
-        "</tr>"
-        "<p>"
-        "<tr>"
-             "<td style='text-align:right'>Away SSID :</td>"
-             "<td><input type='text' name='awayssid' value='" +
-              assid +
-              "'><br></td>"
-        "</tr>"
-        //"<p>"
-        "<tr>"
-             "<td style='text-align:right'>Away Password :</td>"
-             "<td><input type='text' name='awaypassword' value='" +
-              apass +
-              "'><br></td>"
-        "</tr>"
-        "<tr>"
-             "<td style='text-align:right'>Hot Spot  SSID :</td>"
-             "<td><input type='text' id='hotspotssid' name='hotspotssid' value='" +
-              HSssid +
-            "'><br></td>"
-        "</tr>"
-        "<tr>"
-             "<td style='text-align:right'>Hot Spot Password :</td>"
-             "<td><input type='text' id='hotspotpassword' name='hotspotpassword' value='" +
-              HSpass +
-             "'><br></td>"
-        "</tr>"
-        "<tr>"
-          "<td>"
-            "<p><p><p>"
-              "<center><font size=4>"
-                "<button onclick='updateValues(this.form)'>Save Settings</button>"
-              "</font></center>"
-            "</td>"
-            "<td>"
-            "</td>"
-        "</tr>"
-    "</table>"
-  "</form>"
-"<script>"
- "function updateValues(form)"
- "{"
-    "var xhttp = new XMLHttpRequest();"
-    "xhttp.onreadystatechange = function() {"
-      "if (this.readyState == 4 && this.status == 200) {"
-        "var elements = document.getElementById('BFCSettings').elements;"     // validate GMT Offset string is a +/- time
-      "}"
-    "};"
-    "for (var i = 0, element; element = elements[i++];) {"
-   "if (element.type === 'text')"
-      "{"
-        "document.getElementById(element.id).value = this.responseText;"
-        "xhttp.open('POST', '/BFCValueSave', true);"
-        "xhttp.send(document.getElementById(element.id).value);"
-      "}"
-    "}"
- "}"
-    "</script>";
-    return result;
-}
-*/
-
 //const char* saved[] PROGMEM = R"=====(
 const char* saved =
   "<script>"
@@ -170,44 +83,6 @@ void onRootIndexRequest(AsyncWebServerRequest *request){
   request->send(200, "text/html", rootIndex);
 }
 
-/*
-// Show the settings page and read in any saved settings
-void onSettingsIndexRequest(AsyncWebServerRequest *request){  
-  getAllPrefs();
-  const char* settingsIndex =  settings().c_str();
-  request->send(200, "text/html", settingsIndex);
-}
-
-
-//*******************************************************************************
-// read the body of the POST and save the data to NVS preference memory
-/*
-void onSettingsPost(AsyncWebServerRequest *request){
-    Serial.print("request->args() = ");
-    Serial.println(request->args());
-    
-    if (request->args() != 0){
-      for (int i = 0; i < request->args(); i++) {   
-        if (request->argName(i).startsWith("home")){
-          currentPref.NameSpace = HOMENETWORK;
-        }
-        if (request->argName(i).startsWith("away")){
-          currentPref.NameSpace = AWAYNETWORK;
-        }
-        if (request->argName(i).startsWith("hotspot")){
-          currentPref.NameSpace = HOTSPOTNETWORK;
-        }
-
-        currentPref.Key = request->argName(i);
-        currentPref.Value = request->arg(i);
-
-        SavePref (&currentPref);
-      }
-    }
-    
-    request->send(200, "text/html", saved);   // show the "Saved" notification message
-  }
-*/
 
 // Callback: receiving any WebSocket message
 void onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t * payload, size_t length) {
