@@ -74,7 +74,7 @@ void setup(void){
     Serial.begin(115200);
     while(!Serial);
     
-    //eraseAllPrefs();  
+    //eraseAllPrefs();
 
     myUpdater.begin();
     configureWebServer();   //Start the web server so they can set the SSIDs and Passwords via AP

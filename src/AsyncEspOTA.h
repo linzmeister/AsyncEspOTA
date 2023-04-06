@@ -2,20 +2,21 @@
 
 #ifndef __AsyncEspOTA_H__
 #define __AsyncEspOTA_H__
-
 #include <Arduino.h>
 
 #include <Preferences.h>        // Store an unknown # of SSID & password pairs
+#define RW_MODE false
+#define RO_MODE true
 
 #include <WiFi.h>				// it's IoT... why not
 #include <esp_wps.h>			// Allow WPS router configurations
 #include <WiFiMulti.h>			// Connect to any saved SSID in Preferences and within radio range
 
-#include "wifiSettings.h"		// http://[insert host]/wifiSettings.html page:
+#include "wifiSettings.h"		// http://[insert host]/wifiSettings html page:
 								// Read preferences, 
 								// scan for local WiFi networks every 15 seconds, 
 								// connect via WPS, 
-								// save Preferences
+								// save SSID/Password credentials to Preferences NVS RAM
 
 #include <SPIFFS.h>
 #define FORMAT_SPIFFS_IF_FAILED false;	// let's not be erasing everything if we fail to read on first attempt...
@@ -37,7 +38,7 @@
 #include <HTTPUpdate.h>			// Perform the OTA update
 #include <Update.h>				// Gain access to the OTA progressCallbackFunction
 
-#include <ESPmDNS.h>            // bonjour compliant mulitcastDNS for iOS, MacOS, Linux, Windows & Androids 12  and later
+#include <ESPmDNS.h>            // bonjour compliant mulitcastDNS for iOS, MacOS, Linux, Windows & Androids 12 and later
 
 #ifndef HTTP_UPLOAD_BUFLEN
 #define HTTP_UPLOAD_BUFLEN 1436
@@ -60,8 +61,6 @@ void onWiFiEvent(WiFiEvent_t event);
 #define ESP_DEVICE_NAME   "ESP STATION"
 
 enum  socketDataType {
-	SCANSOCKET,
-	SAVEDSOCKET,
 	PROGRESSSOCKET,
 	DISCONNECTED
 };
@@ -70,17 +69,18 @@ extern const char *ssidPrefix;
 extern const char *APpassword;
 		
 extern AsyncWebServer webServer;
-extern WebSocketsServer webSocket;
-extern const int wsPort;
+extern WebSocketsServer webSocket;	// convert to AsyncWebServer's built in webSockets
+extern const int wsPort;			// convert to AsyncWebServer's built in webSockets
 
-extern const char *appsURL;
-extern bool allowAppsURL;
-extern bool allowCustomPaths;
-extern bool allowLocal;
+extern const char *appsURL;			// where to search on the network.internet for json file
+extern bool allowAppsURL;			// Allow preconfigured OTA update path  ??
+extern bool allowCustomPaths;		// Allow user to enter netwok/internet url for OTA update path  ??
+extern bool allowLocal;				// Allow browser local file system OTA update path  ??
 
 
-// So we can send progress data to our webpage via a webSocketsServer
-// needs to remain outside class to keep function signature correct
+// Calback function supplied to update library so we can send progress data to 
+// our webpage via a webSocketsServer
+//  - needs to remain outside class to keep function signature correct
 void updateProgress(size_t progress, size_t total);
 
 /*
@@ -114,7 +114,7 @@ class AsyncEspOTA {
 		#define StateNeedUpdate  2  	// need update (this will trigger an http request in the main loop)
         #define StateWaitingSocket 3	// Waiting for WebSocketsServer connection to permit progress data to be sent to client
 
-		// Response saved in the main loop and checked by the webServer periodically
+		// Responses saved in the main loop and checked by the webServer periodically
 		String repoList;
 		String repoInformation;			
 
@@ -125,7 +125,7 @@ class AsyncEspOTA {
 // all the webSockets stuff
 		void setCurrentClient(uint8_t client_num, socketDataType type);
 		
-		// a callback function from the users sketch to pass into the Update library to get progress values.
+		// a function to provide a Callback function to the Update library to get progress values.
 		void setProgressCallback(UpdateClass::THandlerFunction_Progress progressCallbackFunction);		
 		
 // all the OTAUpdate stuff
@@ -134,25 +134,33 @@ class AsyncEspOTA {
 		String spiffPath;
 		String binPath;
 		
-		
 	private:		
-	long int savedTime;	
+		long int savedTime;	
+		
 // all the Preferences stuff
 		Preferences preferences;
+		int maxCredentials=30;
+		int savedCredentials=0;
 		
-		typedef struct{
+/*		typedef struct{
 			const char *nameSpace;
 			String key;
 			String value;
 		}Pref;
 		Pref currentPref;
+*/
 		
+		typedef struct{
+			const char *nameSpace;
+			int wlanID;
+			String ssid;
+			String password;
+		}Credentials;
+		Credentials currentCredentials;
 
-		void startAP();
 		bool tryCredentials();
-		bool readCredentials (Pref *readPref);
-		void savePref (Pref *savePref);
-		
+		bool readCredentials (Credentials *readCred);
+		bool saveCredentials (Credentials *saveCred);
 		String readPref(String nameSpace, String key);
 		
 // all the WiFi configuration stuff
@@ -160,16 +168,15 @@ class AsyncEspOTA {
 
 		String ssid;
 		String password;
-
-		uint32_t chipID;                      //unique chip ID //serialNumber
-		
-		const char *APssid;                       // set to: ssidPrefix_chipID at runtime
+		uint32_t chipID;        // unique chip ID / serialNumber
+		const char *APssid;		// set to: ssidPrefix_chipID at runtime
+		void startAP();
 		
         WiFiClientSecure WiFiclient;
 		
-		const char *wl_status_to_string(wl_status_t status);
+		const char *wl_status_to_string(wl_status_t status);	//
 		
-// WPS specific stuff
+// WPS specific stuff							// TODO:  Connect via WPS ???   insecure ??
 		static esp_wps_config_t config;
 		void wpsInitConfig();
 		String wpspin2string(uint8_t a[]);		
@@ -180,25 +187,26 @@ class AsyncEspOTA {
 // all the web server stuff
 // WiFi settings page specific stuff		
 		void onWiFiIndexRequest(AsyncWebServerRequest *request);	// serve up web page with saved settings
-
 		void onWiFiSavedRequest(AsyncWebServerRequest *request);	// serve up the saved settings from Preferences
 		void onWiFiScanRequest(AsyncWebServerRequest *request);		// serve up WIFI.Scan data
 
-		void onWiFiPost(AsyncWebServerRequest *request);			// save Wireless LAN settings to preferences
-		//void onWiFiPost(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total);	// with body handler.. not required.
-
-		void onWiFiPostDelete(AsyncWebServerRequest *request);		// delete  Saved WiFi credentials
+		void onWiFiSavePost(AsyncWebServerRequest *request);			// save Wireless LAN settings to preferences
+		void onWiFiDeletePost(AsyncWebServerRequest *request);		// delete  Saved WiFi credentials
 		
 // Firmware update page specific stuff
-		void getRepoList();
-		void getRepoInformation();
 		
-		void handleFirmware(AsyncWebServerRequest *request);	
+		void handleFirmware(AsyncWebServerRequest *request);		// serve up the htnl page to
+
+		void handleRepoList(AsyncWebServerRequest *request);		// Fetch all project repo available
+		void getRepoList();											// find which apps we can install
+		void checkRepoList(AsyncWebServerRequest *request);
+
+
 		void handleRepoInformation(AsyncWebServerRequest *request);
 		void checkRepoInformation(AsyncWebServerRequest *request);
+		void getRepoInformation();									// get the availavable version for a specifi app
+
 		
-		void handleRepoList(AsyncWebServerRequest *request);
-		void checkRepoList(AsyncWebServerRequest *request);
 		
 		void handleUpload(AsyncWebServerRequest *request);
 		

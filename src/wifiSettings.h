@@ -250,7 +250,7 @@ const securityImageTag = (encryption) =>  {
 							scannedWlans.forEach((wlan, index) => {
 								
 								// search through the saved networks and put the signal strength 
-								// in the saved row instead of duplicating it.
+								// next to saved instead of duplicating..
 								var isSaved = false;
 								var savedIndex;
 								for(count=0;  count<savedWlans.length; count++){
@@ -262,7 +262,7 @@ const securityImageTag = (encryption) =>  {
 								}
 								if(isSaved == true){
 									if (wlan.cnctd == "true"){
-										const elements = document.getElementsByClassName('connected');		//should only ever return 1 result... hopefully :/
+										const elements = document.getElementsByClassName('connected');		//should only ever return 1 result
 										try{
 											console.log("# of connected networks : " + elements.length);
 											elements[0].innerHTML = `Active
@@ -325,6 +325,7 @@ const securityImageTag = (encryption) =>  {
 		} else {
 		var someButtons =`
 			<div class='btn-container connected' id='savedWlan-${index}-connect'>
+				Connected
 				<a id='savedWlan-${index}-show' class='btn edit' onclick="(function(){
 					document.getElementById('savedWlan-${index}-connect').classList.add('hidden');
 					document.getElementById('savedWlan-${index}-edit').classList.remove('hidden');
@@ -451,16 +452,35 @@ edited Existing Saved						https://www.w3schools.com/jsref/jsref_obj_array.asp
 		
 		switch(wlanPrefix){
 			case "scanWlan":
+				// figure out if this is already saved or not...
+				var wlan = scannedWlans[wlanIndex];			// gets ssid here
+/*
+				var found = false;
+				savedWlans.forEach(testingWlan, index){
+					switch(true){
+						case (testingWlan.ssid == wlan.ssid):
+							found=true;
+							wlan.wlanID = testingWlan.wlanID;	//??
+							break;
+					}
+				}
+				if(found ==true){
+					wlan.ns = `wlan-${wlanIndex}`;			// copy from scanned to saved and append
+					wlan.wlanID = wlanIndex;
+				} else {
+*/
+					wlan.ns = `wlan-${savedWlans.length}`; // increase scanned
+					wlan.wlanID = savedWlans.length;
+//				}
+				wlan.pass = document.getElementById(`scanWlan-${wlanIndex}-password`).value
+				
 				document.getElementById(`${wlanPrefix}-${wlanIndex}-edit`).classList.add('hidden');
 				document.getElementById(`${wlanPrefix}-${wlanIndex}-connect`).classList.remove('hidden');
-				var wlan = scannedWlans[wlanIndex];				
-				wlan.ns = `wlan-${savedWlans.length}`;		// copy from scanned to saved and append
-				//wlan.ssid = document.getElementById(`${wlanPrefix}-${wlanIndex}-ssid`).value
-				wlan.password = document.getElementById(`${wlanPrefix}-${wlanIndex}-password`).value
 				
-				console.log("after-set ns " +wlan.ns);
-				console.log("after-set ssid " +wlan.ssid);
-				console.log("after-set passsword " +wlan.password);
+				console.log("after-set ns "			+ wlan.ns);
+				console.log("after-set id "			+ wlan.wlanID);
+				console.log("after-set ssid "		+ wlan.ssid);
+				console.log("after-set passsword "	+ wlan.pass);
 				
 				console.log("saving a scanned wifi network");
 				break;
@@ -469,13 +489,14 @@ edited Existing Saved						https://www.w3schools.com/jsref/jsref_obj_array.asp
 				document.getElementById(`${wlanPrefix}-${wlanIndex}-edit`).classList.add('hidden');
 				document.getElementById(`${wlanPrefix}-${wlanIndex}-connect`).classList.remove('hidden');
 				var wlan = savedWlans[wlanIndex];
-				wlan.ns = `wlan-${wlanIndex}`;
-				wlan.ssid = document.getElementById(`${wlanPrefix}-${wlanIndex}-ssid`).value
-				wlan.password = document.getElementById(`${wlanPrefix}-${wlanIndex}-password`).value
+				wlan.ns = `${wlanIndex}`;
+				//wlan.ssid = document.getElementById(`savedWlan-${wlanIndex}-ssid`).value   // fixed value
+				wlan.pass = document.getElementById(`savedWlan-${wlanIndex}-password`).value
 
-				console.log("after-set ns " + wlan.ns);
-				console.log("after-set ssid " +wlan.ssid);
-				console.log("after-set passsword " +wlan.password);
+				console.log("after-set ns "		+ wlan.ns);
+				console.log("after-set id "		+ wlan.wlanID);
+				console.log("after-set ssid "	+ wlan.ssid);
+				console.log("after-set passs "	+ wlan.pass);
 				
 				console.log("saving a saved wifi network");
 				break;
@@ -484,16 +505,15 @@ edited Existing Saved						https://www.w3schools.com/jsref/jsref_obj_array.asp
 				document.getElementById(`${wlanPrefix}-${wlanIndex}-edit`).classList.add('hidden');
 				var wlan = {
 							"ns":`wlan-${savedWlans.length}`, 
-							"ssid":	   document.getElementById(`newWlan-${wlanIndex}-ssid`).value, 	//double handling with below... ???
-							"password":  document.getElementById(`newWlan-${wlanIndex}-password`).value
+							"wlanID": savedWlans.length,
+							"ssid":	 document.getElementById(`newWlan-${wlanIndex}-ssid`).value,
+							"pass":  document.getElementById(`newWlan-${wlanIndex}-password`).value
 							};
-				savedWlans.push(wlan);
-				console.log("newWlan = " + wlan.toString());
-				wlan.nameSpace = `savedWlan-${savedWlans[length]+1}`;
 				
-				console.log("after-set ns " +wlan.ns);
-				console.log("after-set ssid " +wlan.ssid);
-				console.log("after-set passsword " +wlan.password);
+				console.log("after-set ns "		+ wlan.ns);
+				console.log("after-set id "		+ wlan.wlanID);
+				console.log("after-set ssid "	+ wlan.ssid);
+				console.log("after-set passs "	+ wlan.pass);
 				
 				// validate the data !!
 				var errorSsid = false;
@@ -549,15 +569,22 @@ edited Existing Saved						https://www.w3schools.com/jsref/jsref_obj_array.asp
 			default:
 		}
 		
-		document.getElementById('blocker-title').innerHTML='Saving';
-		document.getElementById('blocker').classList.remove('hidden');
-		savedWlans.push (wlan);
+		// Preferences can only store key values up to 15 Chars long.. so validate the SSID maximum length
+		
+		console.log("before save ns "		+ wlan.ns);
+		console.log("before save ID "		+ wlan.wlanID);
+		console.log("before save ssid "		+ wlan.ssid);
+		console.log("before save passs "	+ wlan.pass);		
+
 		var data = new FormData();
-		data.append("ns", wlan.ns);
+		data.append("ns",   wlan.ns);
+		data.append("id",   wlan.wlanID);
 		data.append("ssid", wlan.ssid);
-		data.append("password", wlan.password);
+		data.append("pass", wlan.pass);
 		
 		// show saving --> saved on blocker
+		document.getElementById('blocker-title').innerHTML='Saving';
+		document.getElementById('blocker').classList.remove('hidden');
 		
 		try {
 			const res = await fetch(window.location.href + '/saveWlan', {	
@@ -571,8 +598,6 @@ edited Existing Saved						https://www.w3schools.com/jsref/jsref_obj_array.asp
 		document.getElementById('addButton').classList.remove('hidden');
 		
 		purgeSaved();
-		fetchSavedSettings();
-		startScan();
 	}
 
 
@@ -599,69 +624,33 @@ edited Existing Saved						https://www.w3schools.com/jsref/jsref_obj_array.asp
 		const nameParts  = element.id.split('-');
 		const wlanPrefix = nameParts[0];
 		const wlanIndex  = nameParts[1];
-		
-		//var wlan; = savedWlans[wlanIndex];
+
+		document.getElementById(`${wlanPrefix}-${wlanIndex}`).innerHTML='';
+
+		var wlan = savedWlans[wlanIndex];
+		wlan.ns = `${wlanIndex}`;
+	
 		var data = new FormData();
-		
-		savedWlans.forEach((wlan,index) => {	// iterate through the array
-			switch(true){
-				//case (index < wlanIndex):		// nothing to do here
-				//	break;
-				//case (index == wlanIndex):	// this will be overwritten by the next iteration 
-				//	break;						// index > wlanIndex,  `wlan-${index-1}`
-					
-				case (index == savedWlans.length-1):	// delete the last one
-					wlan.ns = `wlan-${wlanIndex}`;		
-					data.append("ns", wlan.ns);			
-					console.log("deleting ns :" + wlan.ns);
-					try {
-						const res = await fetch(window.location.href + '/deleteSavedWlan', {
-							method: 'POST',
-							body:data
-						});
-					} catch (err) {
-						console.error(`Error: ${err}`);
-					}			
-					break;
+		data.append("ns", wlan.ns);
 				
-				// reduce the index value by 1 and save to preferences between user delete wlan and end of array
-				case (index > wlanIndex):
-					wlan.ns = `wlan-${index-1}`;
-					data.append("ns", wlan.ns);
-					console.log("saving ns :" + wlan.ns + " " + wlan.ssid + " " wlan.password);
-					try {
-						const res = await fetch(window.location.href + '/saveWlan', {
-							method: 'POST',
-							body:data
-						});
-					} catch (err) {
-						console.error(`Error: ${err}`);
-					}
-					break;
-				
-				default;
-					break;
-			}
-		});
-		
-		purgeSaved();
-		
-		document.getElementById('blocker').classList.add('hidden');
-		fetchSavedSettings();	// this will re-populate the array
-		startScan();
+		try {
+			const res = await fetch(window.location.href + '/deleteWlan', {		//
+				method: 'POST',
+				body:data
+			});
+		} catch (err) {
+			console.error(`Error: ${err}`);
+		}
+
+		purgeSaved();							
 	}
 
 	function purgeSaved(){
 		console.log("purging saved networks ");
-		console.log("saved networks :" + savedWlans.length)
-		savedWlans=null;
-/*		for(i=savedWlans.length; i<0; --i){
-			savedWlans.pop(i);	//throw away ALL the elements
-			console.log(savedWlans.length)
-		}
-*/
-
-		document.getElementById('saved').innerHTML="";
+		savedWlans=null;								// throw away the data
+		document.getElementById('saved').innerHTML="";	// throw away the display elements
+		fetchSavedSettings();							// this will re-populate the data and refresh the display
+		startScan();
 	}
 
 // Window Interval functions:

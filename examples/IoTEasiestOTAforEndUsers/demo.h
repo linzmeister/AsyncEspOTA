@@ -26,10 +26,11 @@
 #define ESP_MODEL_NAME    "ESPRESSIF IOT"
 #define ESP_DEVICE_NAME   "ESP STATION"
 
-static esp_wps_config_t config;
 
 const char *ssidPrefix = "AsyncEspOTA_";
 const char *APpassword = "123456789";
+
+static esp_wps_config_t config;
 
 WiFiMulti wifiMulti;
 long int savedTime;
