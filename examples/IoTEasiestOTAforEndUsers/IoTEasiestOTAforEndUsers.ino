@@ -67,7 +67,7 @@ If either of the above are used, the key-value pair will need to be recreated be
 // create/ Erase preference for APpassword
 
 
-//forware declarations
+//forward declarations
 void eraseAllPrefs();
 
 void setup(void){

@@ -45,17 +45,16 @@ void updateProgress(size_t progress,  size_t total){
 void onWiFiEvent(WiFiEvent_t event){
 	switch (event) { 
 		case SYSTEM_EVENT_STA_CONNECTED:
-			log_d("[WiFi_Event] Connected to WiFi Network " + String(WiFi.SSID()));
+			log_d("[WiFi_Event] Connected to WiFi Network %S", String(WiFi.SSID()));
 			
 			gateway = WiFi.gatewayIP();
-			log_d("gateway should now be set to : " + String(gateway));
+			log_d("gateway should now be set to : %S", String(gateway));
 			
 			// only use mDNS if connected to another AP - 
 			//use mdns for host name resolution
 			if (MDNS.begin(WiFi.softAPSSID().c_str())) {
 				log_d("MDNS responder started");
-				log_d("You can now connect to http://");
-				log_d(WiFi.softAPSSID() + ".local");     //http://AsyncEspOTAxxxxx.local/
+				log_d("You can now connect to http:// %S .local", String(WiFi.softAPSSID() ));     //http://AsyncEspOTAxxxxx.local/
 				
 			} else {
 				log_d("Error setting up MDNS responder!");
@@ -278,6 +277,8 @@ void AsyncEspOTA::begin(){
 	
 	//See discussion: https://github.com/RomeHein/ESPInstaller/issues/2
 	WiFiclient.setInsecure();
+	
+	webSocket.broadcastTXT("reboot complete");
 }
 /*
 	server.on("/update",HTTP_POST,[this]() { handleUpload(); }, [this]() { install(); });
@@ -336,7 +337,7 @@ void AsyncEspOTA::OnWiFiEvent(WiFiEvent_t event, arduino_event_info_t info){
 			break;
     
 		case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-			log_d("Connected to :" + String(WiFi.SSID()));
+			log_d("Connected to :%S", String(WiFi.SSID()));
 			log_d("Got IP: %S", String(WiFi.localIP()));
 			break;
       
@@ -358,7 +359,7 @@ void AsyncEspOTA::OnWiFiEvent(WiFiEvent_t event, arduino_event_info_t info){
 			break;
 
 		case ARDUINO_EVENT_WPS_ER_SUCCESS:
-			log_d("WPS Successful, stopping WPS and connecting to: " + String(WiFi.SSID()));
+			log_d("WPS Successful, stopping WPS and connecting to: %S", String(WiFi.SSID()));
 			esp_wifi_wps_disable();
 			delay(10);
 			WiFi.begin();
@@ -379,7 +380,7 @@ void AsyncEspOTA::OnWiFiEvent(WiFiEvent_t event, arduino_event_info_t info){
 			break;
     
 		case ARDUINO_EVENT_WPS_ER_PIN:
-			log_d("WPS_PIN = " + wpspin2string(info.wps_er_pin.pin_code));
+			log_d("WPS_PIN = %S", wpspin2string(info.wps_er_pin.pin_code));
 			break;
             
     default: break;
@@ -389,7 +390,7 @@ void AsyncEspOTA::OnWiFiEvent(WiFiEvent_t event, arduino_event_info_t info){
 
 
 void  AsyncEspOTA::startAP(){ 
-  log_d("Starting (Access Point) with ssid : " + String(APssid));
+  log_d("Starting (Access Point) with ssid : %S", String(APssid));
   // Remove the password parameter, if you want the AP (Access Point) to be open
 
 
@@ -622,7 +623,7 @@ void AsyncEspOTA::onWiFiSavedRequest(AsyncWebServerRequest *request){
 			//open Preferences in Read Only mode (true)
 			String temp = "wlan-" + String(i);
 			currentCredentials.nameSpace=temp.c_str();
-			log_e("trying to read preference : %S", temp);
+			log_d("trying to read preference : %S", temp);
 			
 			if(readCredentials(&currentCredentials)){
 					if(json.length()>3) json += ",";	// only add a comma if not first... and last cant reach here
@@ -639,13 +640,13 @@ void AsyncEspOTA::onWiFiSavedRequest(AsyncWebServerRequest *request){
 					}
 					json += "}";
 				savedCredentials++;
-				log_e("savedCredentials = %i ", savedCredentials);
+				log_d("savedCredentials = %i ", savedCredentials);
 			}
         }
     json += "]";
 	if (json.length()>3){
 		request->send(200, "text/json", json);	
-		log_d(json);
+		log_d("%S", json);
 	} else {
 		request->send(200, "text/json", "[]");
 		log_d("no Saved settings to send, sending empty set to client");
@@ -661,7 +662,7 @@ void AsyncEspOTA::onWiFiScanRequest(AsyncWebServerRequest *request){
 	String json = "[";
 	
 	log_d("current wifi mode is %i", WiFi.getMode());	//??  returns an Int??  potential crahs point
-	log_d(WiFi.getMode());
+	log_d("%i",WiFi.getMode());
 	
 	//First request will return 0 results unless you start scan from somewhere else (loop/setup)
 	//Do not request more often than 3-5 seconds
@@ -818,7 +819,7 @@ void AsyncEspOTA::handleRepoList(AsyncWebServerRequest *request){
 	log_v(printRequestDetails(request));
 	
 	repoListState = StateNeedUpdate;
-	log_d("Set repoListState = " + String(repoListState));
+	log_d("Set repoListState = %S", String(repoListState));
     request->send(200, "text/plain", "ok");
 }
 
@@ -829,7 +830,7 @@ void AsyncEspOTA::checkRepoList(AsyncWebServerRequest *request) {
 
 	if (repoListState == StateDataUpdated) {
 		log_d("sending repoList to request client");
-		log_d(repoList);
+		log_d("%S", repoList);
         request->send(200, "text/json", repoList);
     } else {
 		log_d("sending repoListState # to request client");
@@ -844,7 +845,7 @@ void AsyncEspOTA::handleRepoInformation(AsyncWebServerRequest *request){
 	if (request->hasArg("repo")) {
         repoPath = request->arg("repo") + "versions.json";
         repoInformationState = StateNeedUpdate;
-		log_d("Set repoInformationState = " + String(repoInformationState));
+		log_d("Set repoInformationState = %S", String(repoInformationState));
         request->send(200, "text/plain", "ok");
         return;
     }
@@ -858,7 +859,7 @@ void AsyncEspOTA::checkRepoInformation(AsyncWebServerRequest *request) {
 	
 	if (repoInformationState == StateDataUpdated) {
 		log_d("sending repoListInformation to request client");
-		log_d(repoInformation);
+		log_d("%S", repoInformation);
         request->send(200, "text/json",repoInformation);
     } else {
 		log_d("sending repoListInformationState # to request client");
@@ -889,14 +890,14 @@ void AsyncEspOTA::getRepoList(){
 	repoList = http.getString();
 	repoListState = StateDataUpdated;
 
-	log_d("Set repoListState = " + String(repoListState));
+	log_d("Set repoListState = %S", String(repoListState));
     log_d("[SERVER] repo list retrieved: \n%s\n",repoList.c_str());
   } else{
 
 	log_d("[SERVER] Could not get repo list. Error %d: %s\n", httpResponseCode, http.errorToString(httpResponseCode).c_str());
 
 	repoListState = StateError;
-	log_d("Set repoListState = " + String(repoListState));
+	log_d("Set repoListState = %S", String(repoListState));
   }
   http.end();
 }
@@ -915,7 +916,7 @@ void AsyncEspOTA::getRepoInformation(){
 		repoInformation = http.getString();
 		repoInformationState = StateDataUpdated;
 
-		log_d("Set repoInformationState = " + String(repoInformationState));
+		log_d("Set repoInformationState = %S", String(repoInformationState));
 		log_d("[SERVER] repo info retrieved: %s\n",repoInformation.c_str());
 		http.end();
 	}
@@ -923,7 +924,7 @@ void AsyncEspOTA::getRepoInformation(){
 	{
 		log_d("[SERVER] Could not get repo information: %s\n", http.errorToString(httpResponseCode).c_str());
 		repoInformationState = StateError;
-		log_d("Set repoInformationState = " + String(repoInformationState));
+		log_d("Set repoInformationState = %S", String(repoInformationState));
 		http.end();
 	}
 }
@@ -945,12 +946,12 @@ void AsyncEspOTA::handleInstallFromRepo(AsyncWebServerRequest *request) {
 	if (request->hasArg("spiffsPath")) {
         spiffPath = request->arg("spiffsPath");
         repoInstallationState = StateNeedUpdate;
-		log_d("Set repoInstallationState = " + String(repoInstallationState));
+		log_d("Set repoInstallationState = %S", String(repoInstallationState));
     }
     if (request->hasArg("binPath")) {
         binPath = request->arg("binPath");
 		repoInstallationState = StateNeedUpdate;
-		log_d("Set repoInstallationState = " + String(repoInstallationState));
+		log_d("Set repoInstallationState = %S", String(repoInstallationState));
     }
 	request->send(200, "text/plain",  "OK");
 }
@@ -997,21 +998,21 @@ void AsyncEspOTA::installFromRepo(void){
 		case HTTP_UPDATE_FAILED:
 			log_d("[OTA] Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
 			repoInstallationState = StateError;
-			log_d("Set repoInstallationState = " + String(repoInstallationState));
+			log_d("Set repoInstallationState = %S", String(repoInstallationState));
 			webSocket.sendTXT(clientNum,"Upload incomplete");
 			break;
 
 		case HTTP_UPDATE_NO_UPDATES:
 			log_d("[OTA] no updates");
 			repoInstallationState = StateError;
-			log_d("Set repoInstallationState = " + String(repoInstallationState));
+			log_d("Set repoInstallationState = %S", String(repoInstallationState));
 			webSocket.sendTXT(clientNum,"No Updates available");
 			break;
 
 		case HTTP_UPDATE_OK:
 			log_d("[OTA] BIN updated");
 			repoInstallationState = StateDataUpdated;
-			log_d("Set repoInstallationState = " + String(repoInstallationState));
+			log_d("Set repoInstallationState = %S", String(repoInstallationState));
 			//	send a websocket message to notify client we have finished
 			webSocket.sendTXT(clientNum,"Restarting");
 			ESP.restart();
@@ -1057,13 +1058,13 @@ void AsyncEspOTA::printRequestDetails(AsyncWebServerRequest *request){
 
 	log_d("request details:");
 
-	log_d(request->version());       // uint8_t: 0 = HTTP/1.0, 1 = HTTP/1.1
-	log_d(request->method());        // enum:    HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PUT, HTTP_PATCH, HTTP_HEAD, HTTP_OPTIONS
-	log_d(request->url());           // String:  URL of the request (not including host, port or GET parameters)
-	log_d(request->host());          // String:  The requested host (can be used for virtual hosting)
-	log_d(request->contentType());   // String:  ContentType of the request (not avaiable in Handler::canHandle)
-	log_d(request->contentLength()); // size_t:  ContentLength of the request (not avaiable in Handler::canHandle)
-	log_d(request->multipart());     // bool:    True if the request has content type "multipart"
+	log_d("%ui", request->version());       // uint8_t: 0 = HTTP/1.0, 1 = HTTP/1.1
+	log_d("%i", request->method());        // enum:    HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PUT, HTTP_PATCH, HTTP_HEAD, HTTP_OPTIONS
+	log_d("%S", request->url());           // String:  URL of the request (not including host, port or GET parameters)
+	log_d("%S", request->host());          // String:  The requested host (can be used for virtual hosting)
+	log_d("%S", request->contentType());   // String:  ContentType of the request (not avaiable in Handler::canHandle)
+	log_d("%i", request->contentLength()); // size_t:  ContentLength of the request (not avaiable in Handler::canHandle)
+	log_d("%b", request->multipart());     // bool:    True if the request has content type "multipart"
 	
 	//List all collected headers
 	int headers = request->headers();

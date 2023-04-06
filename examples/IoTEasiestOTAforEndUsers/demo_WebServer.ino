@@ -113,12 +113,11 @@ void onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t * payload, size_
     case WStype_TEXT:
       // Print out raw message
       Serial.printf("[%u] Received text: %s\n", clientNum, payload);
-      Serial.print("comparing string to test statement = ");
       Serial.println(strcmp((char *)payload, "?FirmwareProgress"));
 // ****************************************************************************************************************************
       // Start sending progress bar info
       if(strcmp((char *)payload, "?FirmwareProgress") == 0 ) {
-          webSocket.sendTXT(clientNum, "FirmwareProgress");      //just for debugging web client.. doesn't *do* anything
+          webSocket.sendTXT(clientNum, "FirmwareProgress");      //enables the Install buttons
           
           // let myUpdater know which client requested a firmware update
           myUpdater.setCurrentClient(clientNum, PROGRESSSOCKET);

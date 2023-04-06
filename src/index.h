@@ -263,7 +263,12 @@ const char styleCSS[] PROGMEM = R"=====(
         margin: 10px 5px;
         cursor: pointer;
         text-decoration: none;
+		pointer-events: auto;
     }
+	.btn:disabled{
+		color: whitesmoke
+		pointer-events: none;
+	}
     .edit {
         background-color: dodgerblue;
         border: solid 1px dodgerblue;
@@ -436,7 +441,7 @@ const char updatePageCustom[] PROGMEM = R"=====(
                         <label for='bin-path'>Bin file URL</label>
                         <input type='text' name='bin' id='bin-path-input'>
                     </div>
-                    <a id='submit-update-file' onclick='installCustomPaths()' class='btn save disable'>Update</a>
+                    <a id='submit-update-file' onclick='installCustomPaths()' class='btn save disabled'>Update</a>
                 </div>
             </div>
         </div>
@@ -456,7 +461,7 @@ const char updatePageLocal[] PROGMEM = R"=====(
                         <label for='firmware-file' id='file-update-label'>Choose file</label>
                         <input type='file' name='update' id='firmware-file' onchange='fillUpdateInput(this)' style=display:none>
                         
-						<a id='submit-update-file' onclick='submitUpdate()' class='btn save disable'>Update</a>
+						<a id='submit-update-file' onclick='submitUpdate()' class='btn save disabled'>Update</a>
 						
 						<form method='POST' action='/update' enctype='multipart/form-data'>
 							<input type='file' name='update'>
@@ -592,29 +597,35 @@ const char progressPageB[] PROGMEM = R"=====(;    // end of wsPoprt definition
 // Called when a message is received from the server
     function onMessage(evt) {
 
-      // Print out our received message
-      //console.log("Received: " + evt.data);
-      //console.log("evt.data.substr(0,7) = " + evt.data.substr(0,7));
-      
-      if (evt.data.substr(0,10) == "Restarting"){ 
-        finished.innerHTML = "Rebooting controller, please wait";
+		// Print out our received message
+		//console.log("Received: " + evt.data);
+		//console.log("evt.data.substr(0,7) = " + evt.data.substr(0,7));
+
+		if (evt.data.substr(0,15) == "FirmwareProgress"){ 
+			const elements = getElementsbyClass('disabled');
+			elements.forEach((element,index) => {			// iterate through the list
+				element[index].classList.remove('disabled');
+			});
+		}
+		
+		if (evt.data.substr(0,10) == "Restarting"){ 
+		finished.innerHTML = "Rebooting controller, please wait";
 		setTimeout(loadHome, 10000)		// delay 10 seconds then go back to home
-      }
-      
-      if (evt.data.substr(0,17) == "Upload incomplete"){
-        spiffsProgressBar.innerHTML = "";
-        binProgressDiv.innerHTML = "";
-        finished.innerHTML = evt.data;
-        //uploadButton.innerHTML = "Update Failed";
-        //uploadButton.disabled = false;    
-      }
-      if (evt.data.substr(0,20) == "No Updates available"){
-        spiffsProgressDiv.innerHTML = "";
-        binProgressDiv.innerHTML = "";
-        finished.innerHTML = evt.data;
-        //uploadButton.innerHTML = "No Updates available";
-        //uploadButton.disabled = false;
-      }
+		}
+
+		if (evt.data.substr(0,17) == "Upload incomplete"){
+		spiffsProgressBar.innerHTML = "";
+		binProgressDiv.innerHTML = "";
+		finished.innerHTML = evt.data;
+		}
+		if (evt.data.substr(0,20) == "No Updates available"){
+		spiffsProgressDiv.innerHTML = "";
+		binProgressDiv.innerHTML = "";
+		finished.innerHTML = evt.data;
+		}
+		if (evt.data.substr(0,14) == "reboot complete"){
+			loadHome();
+		}
       
        switch(evt.data.substr(0,1)){      // update progress bar %'s     example message s999424,1012528#84.20%
         case "s":   // received SPIFFS file progress                  
@@ -658,13 +669,12 @@ const char progressPageB[] PROGMEM = R"=====(;    // end of wsPoprt definition
       doSend("?FirmwareProgress");
       uploadButton.disabled = true;    // Disable button
     }
-/*
-    function loadHome(){
-      const res = await fetch(window.location.href, {
-          method: 'GET',
-        });
+
+    const loadHome = async () => {
+      const res = await fetch(window.location.hostname);
     }
-  */  
+	
+	
     // Restart ESP
     const restart = async () => {
       try {
