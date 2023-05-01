@@ -67,6 +67,9 @@ These libraries are not only for the OTAUpdate process, but they form the founda
 
 ### Important: you need to pick a partition scheme for the project that allows for OTA updates.
 Let say you want to install [app1](https://github.com/linzmeister/AsyncEspOTA/tree/main/DemoRepo/app1) via AsyncEspOTA. As this project needs a "Minimal SPIFFS" use partition scheme (1.9MB APP with OTA and 190KB SPIFFS), you'll need to select this type of partition in Arduino IDE `Tools -> Partition Scheme` menu.  Then you can click on the upload button of your Arduino IDE.
+`TODO: Add coreDump to Flash ROM and send to browser client/another web server 
+custom  Partitiopn files  including coreDump
+Provide custom bootrom files to copy into Arduino IDE sdk for flashing`
 
 ## Usage
 `TODO: verify if mDNS causes data connection problems without being a WiFiClient itself.`
