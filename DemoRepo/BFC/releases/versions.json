@@ -4,6 +4,6 @@
     "current": true,
     "partitionScheme":"min_spiffs",
     "description": "Testing integration with main program",
-    "compatibility": [0.6.0]
+    "compatibility": []
 }
 ]
