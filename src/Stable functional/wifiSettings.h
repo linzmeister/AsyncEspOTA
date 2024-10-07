@@ -76,37 +76,37 @@ const char wifiPageB[] PROGMEM = R"=====(;
 	var imageLoadFailed=false;
 	
 	try{
-		bar1.src = "/bar1.png";		// weakest signal
+		bar1.src = "/images/bar1.png";		// weakest signal
 	} catch(err) {
 		imageLoadFailed=true;
 	}
 	try{
-		bar2.src = "/bar2.png";
+		bar2.src = "/images/bar2.png";
 	} catch(err) {
 		imageLoadFailed=true;
 	}
 	try{
-		bar3.src = "/bar3.png";
+		bar3.src = "/images/bar3.png";
 	} catch(err) {
 		imageLoadFailed=true;
 	}
 	try{
-		bar4.src = "/bar4.png";
+		bar4.src = "/images/bar4.png";
 	} catch(err) {
 		imageLoadFailed=true;
 	}
 	try{
-		bar5.src = "/bar5.png";		// strongest signal
+		bar5.src = "/images/bar5.png";		// strongest signal
 	} catch(err) {
 		imageLoadFailed=true;
 	}
 	try{
-		padlockOpen.src   = "/open.png";
+		padlockOpen.src   = "/images/open.png";
 	} catch(err) {
 		imageLoadFailed=true;
 	}
 	try{
-		padlockClosed.src = "/closed.png";
+		padlockClosed.src = "/images/closed.png";
 	} catch(err) {
 		imageLoadFailed=true;
 	}
@@ -438,22 +438,9 @@ const createNewSavedRow = (index) => {
 		stopScan();
 	}
 
-// Connect via WPS
-const wpsConnect = async () => {
-	//send a message to the Eesp32 to start WPS connection
-	// need some UI( element to select PIN  or Push Button
-	
-	let resp = await fetch(window.location.href + '/wpsConnect/pin');
-	
-	//let resp = await fetch(window.location.href + '/wpsConnect/push');
-	
-	
-	// need to setup wpsInitConfig
-	// get response from AP the 
-}
 
 /** 
-save A set of network credentials:
+save network settings:
 New Scanned
 New Saved
 edited Existing Saved						https://www.w3schools.com/jsref/jsref_obj_array.asp
@@ -693,58 +680,3 @@ edited Existing Saved						https://www.w3schools.com/jsref/jsref_obj_array.asp
 </html>
 <!-- HTML_SCRIPT_END -->
 )=====";
-
-
-
-
-/*		Ralph Bacon HTML parameterised loading
-
-// Psuedo values for web page populating
-int specialValue = 42;
-std::string webPageDesc = ", and wonderfully written ";
-
-// Format the html as a RAW literal so we don't have to escape all the quotes (and more)
-	std::string htmlOutput = R"(
-	  <html>
-		<head>
-		  <title>Landing @parm1 Page</title>
-		  <style>
-			body {
-			  background-color: forestgreen;
-			  font-family: Arial, Sans-Serif;
-			  color: yellow;
-			}
-			#myValue {
-			  width: 50px;
-			}
-		  </style>
-		</head>
-		<body>
-		  <h1>My Landing Page: @parm1</h1>
-		  <p>
-			This is a descriptive)";
-
-	htmlOutput.append(webPageDesc);
-
-	htmlOutput += R"( paragraph for your landing page 
-			<input type="text" id="myValue" value="@parm1">
-		  </p>
-		</body>
-	  </html>
-	)";
-	
-
-  // Send back a web page (landing page)
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    // Tell the system that we will be sending back html (not just plain text)
-    AsyncResponseStream *response = request->beginResponseStream("text/html");
-
-    // Inject the values into the web page
-    updateParm1(&htmlOutput, "@parm1", std::to_string(specialValue));
-
-    // Output the stuffed string (yes, that's a term)
-    response->printf(htmlOutput.c_str());
-
-    // Send back all the text/html for a standard web page
-    request->send(response);
-  });*/

@@ -1,5 +1,12 @@
 [
     {
+        "name": "BFC",
+        "description" : "The world's easiest IoT device for END USERS to configure with OTA updates",
+        "repoRawPath" : "https://raw.githubusercontent.com/linzmeister/AsyncEspOTA/main/DemoRepo/BFC/releases/",
+		"SPIFFSFilename": "",
+		"BinFilename" : "BFC_0.6.0_2nd_Prototype.ino.bin"
+    },
+	{
         "name": "IoTEasiestOTAforEndUsers",
         "description" : "The world's easiest IoT device for END USERS to configure with OTA updates",
         "repoRawPath" : "https://raw.githubusercontent.com/linzmeister/AsyncEspOTA/main/versions/",

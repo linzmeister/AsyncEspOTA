@@ -1,0 +1,43 @@
+<HTML>
+	<body>
+		<div class='spacer'>
+		</div>
+		<div class="header hidden" id='imageDownload'>
+			<a onclick='updateSPIFFS()' class='btn edit'>Download Images</a>
+		</div>
+		<div class='lds-ring' id='page-loader'>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+		
+		<div class='container' id='saved-container'>
+			<div id='saved-header-bar' class='header-container'>
+				<h2>Saved Networks</h2>
+				<div class='btn-container' id='addButton'>
+				<a onclick='addNew()'  class='btn on'>+ Add network</a>
+				</div>
+			</div>
+			<div id='saved' class='column'>
+			</div>
+		</div>
+		
+		<div class='container' id='scanned-container'>
+			<div id='scanned-header-bar' class='header-container'>
+				<h2>Local WiFi Networks </h2>
+			</div>
+			<div id='scan' class='column'>
+			</div>
+		</div>
+		
+		<div id='blocker' class='hidden'>
+		  <h2 id='blocker-title'>Loading</h2>
+			<div id='Saved'>				
+				</p>
+				<p id='finished'>
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,23 @@
+<div class="container" id="automation-container">
+	<div id='local-header-bar' class="header-container">
+		<h2>Install from local directory</h2>
+	</div>
+	<div id='local' class='column'>
+		<div class='set'>
+			<div class='set-inputs'>
+				<div class='row'>
+					<label for='firmware-file' id='file-update-label'>Choose file</label>
+					<input type='file' name='update' id='firmware-file' onchange='fillUpdateInput(this)' style=display:none>
+					
+					<a id='submit-update-file' onclick='submitUpdate()' class='btn save disabled'>Update</a>
+					
+					<form method='POST' action='/update' enctype='multipart/form-data'>
+						<input type='file' name='update'>
+						<input type='submit' value='Update'>  
+					</form>"
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

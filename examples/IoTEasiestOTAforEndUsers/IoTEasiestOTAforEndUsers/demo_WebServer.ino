@@ -26,7 +26,7 @@ const char indexPageB[] PROGMEM = R"=====(<br/>
                 <a href=/wifiSettings><button>WiFi Settings</button></a>
            </td>
             <td>
-                <!-- a href=/settings><button>Other Settings</button></a -->
+                <!-- a href=/settings><button></button></a -->
            </td>
       </tr>
       <tr height='70'>

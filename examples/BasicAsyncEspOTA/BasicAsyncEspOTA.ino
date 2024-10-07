@@ -8,23 +8,23 @@
       3) installing firmware updates to the product as new features and bug fixes are released.
     
     It is also a starting point for IoT based projects which will include webpages served by 
-    the esp32 and the AsyncEspOTA library adds Over the Aiur firmware updates from a gitHub 
+    the esp32 and the AsyncEspOTA library adds Over the Air firmware updates from a gitHub 
     repository, custom URL and web client local file systems.  
     
     It uses an AsyncWebServer and WebSocketsServer to display webpages and show firmware update progresss 
     including error messages on the /firmware web pages if the update fails.
 
-    The library uses some JSON files to select which firmwware poroject and which version you wish to load 
+    The library uses some JSON files to select which firmwware project and which version you wish to load 
     into the esp32.
 
-    The sketch is broken up into several files to keep various elements of the code spearated.  
+    The sketch is broken up into several files to keep various elements of the code separated.  
     demo.h includes all the library references and Global variable declarations.
     demo_WebServer.ino includes the user webpages, event handlers and callback functions.
     demo_WiFi_Prefs.ino includes all the wifi initialisation functions, ssid and Password 
         settings which are saved from the web server and stored via the preferences library functions.
 
     If the library and supporting commands are added into multiple different projects, it is 
-    possible to add them into the inderlying JSON apps list so that they may be uploded Over The Air    
+    possible to add them into the underlying JSON apps list so that they may be uploded Over The Air    
     
     The circuit:
     * esp32
@@ -66,22 +66,22 @@ bool allowAppsURL = true;
 bool allowCustomPaths = false;
 bool allowLocal = false;
 
-//AsyncEspOTA myUpdater;
+AsyncEspOTA myUpdater;
 
 // Global variables, Pin Definitions, error constants etc *************************************
-IPAddress local_ip(192,168,4,1);
-IPAddress gateway(192,168,4,1);
-IPAddress subnet(255,255,255,0);
+//IPAddress local_ip(192,168,4,1);
+//IPAddress gateway(192,168,4,1);
+//IPAddress subnet(255,255,255,0);
 
 //const char *ssid     = "218";
 //const char *password = "m0ng00se";
 
-const char *ssid     = "Goodson";
-const char *password = "G142WicksRoad";
+//const char *password = "G142WicksRoad";
+//const char *ssid     = "Goodson";
 
 const char *APssid = "AsyncEspOTA";
 const char *APpassword = "";
-
+const char *ssidPrefix="Thing";
 
 String root(); 
 
@@ -129,7 +129,7 @@ void setup(void){
         Serial.print("IP address : ");
         Serial.println(WiFi.localIP());
       }
-*
+*/
     webServer.on("/", HTTP_GET, onRootIndexRequest);
     webServer.onNotFound([](AsyncWebServerRequest *request){onPageNotFound(request);});
     
@@ -137,14 +137,13 @@ void setup(void){
     webServer.begin();
     webSocket.begin();
     webSocket.onEvent(onWebSocketEvent);
- */
+ 
 }
 
 void loop(){
     if(wifiMulti.run() != WL_CONNECTED) {
         Serial.println("WiFi not connected!");
         delay(1000);
-        
     }
    // myUpdater.loop(); //checks to see if the the user has changed Firmware Update flags and responds accordingly
     webSocket.loop();
@@ -231,7 +230,7 @@ void onPageNotFound(AsyncWebServerRequest *request) {
     Serial.println("[Error 404 " + remote_ip.toString() +
                     "] HTTP GET request of " + request->url());
     request->send(404, "text/plain", 
-      "We honestly searched everywhere but \"We still... haven't found... what your looking for\". :D ;)");
+      "We honestly searched everywhere but \"We still... haven't found... what you're looking for\". :D ;)");
       request->send(404, "text/plain", 
       "[" + remote_ip.toString() +
                     "] HTTP GET request of " + request->url());
