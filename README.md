@@ -174,7 +174,7 @@ aSecondAwesomeProjectWithSpiffs
             |_ spiffs.bin
 ```
 
-It's up to you if you want to provide multiple version of your project. All you have to do is add a  record  to the `versions.json` file (or whatever you called it) that matches your versions folder st ructure.  In the above exemple, your `versions.json` for yourAwesomeProject will need to contain the following:
+It's up to you if you want to provide multiple version of your project. All you have to do is add a  record  to the `versions.json` file, that matches your versions folder st ructure.  In the above example, your `versions.json` for yourAwesomeProject will need to contain the following:
 ```
 [{
     "version": 1.2,
