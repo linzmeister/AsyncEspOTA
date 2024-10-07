@@ -1,37 +1,37 @@
 [
-    {
-        "name": "BFC",
-        "description" : "The world's easiest IoT device for END USERS to configure with OTA updates",
-        "repoRawPath" : "https://raw.githubusercontent.com/linzmeister/AsyncEspOTA/main/DemoRepo/BFC/releases/",
-		"SPIFFSFilename": "",
-		"BinFilename" : "BFC_0.6.0_2nd_Prototype.ino.bin"
-    },
 	{
-        "name": "IoTEasiestOTAforEndUsers",
+        "name"		  : "IoTEasiestOTAforEndUsers",
         "description" : "The world's easiest IoT device for END USERS to configure with OTA updates",
         "repoRawPath" : "https://raw.githubusercontent.com/linzmeister/AsyncEspOTA/main/versions/",
 		"SPIFFSFilename": "spiffs.bin",
 		"BinFilename" : "IoTEasiestOTAforEndUsers.ino.esp32.bin"
     },
     {
-        "name": "BasicAsyncEspOTA",
+        "name"		  : "BasicAsyncEspOTA",
         "description" : "a simplified example of OTA",
         "repoRawPath" : "https://raw.githubusercontent.com/linzmeister/AsyncEspOTA/main/DemoRepo/BasicAsyncEspOTA/releases/",
 		"SPIFFSFilename": "",
 		"BinFilename" : "BasicAsyncEspOTA.ino.esp32.bin" 
     }	,
 	{
-        "name": "app 1",
+        "name"		  : "app 1",
         "description" : "some whizz bang doohickey",
         "repoRawPath" : "https://raw.githubusercontent.com/linzmeister/AsyncEspOTA/main/DemoRepo/app1/versions/",
 		"SPIFFSFilename": "",
 		"BinFilename" : "app1.bin"
     },
     {
-        "name": "app 2",
+        "name"		  : "app 2",
         "description" : "just an above average IoT OTA example - with SPIFFS FileSystem data",
         "repoRawPath" : "https://raw.githubusercontent.com/linzmeister/AsyncEspOTA/main/DemoRepo/app2/deployed/",
 		"SPIFFSFilename": "spiffs.bin",
 		"BinFilename" : "app2.bin"
+    },
+	{
+		"name"		  : "BFC",
+		"description" : "You don't need to know",
+		"repoRawPath" : "https://raw.githubusercontent.com/linzmeister/AsyncEspOTA/main/DemoRepo/BFC/releases/",
+		"SPIFFSFilename": "",
+		"BinFilename" : "BFC_0.6.0_2nd_Prototype.ino.bin"
     }
 ]
